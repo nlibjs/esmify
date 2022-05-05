@@ -8,11 +8,11 @@ import * as path from 'path';
 interface Options {
     /** (default: `process.cwd()`) A path to the directory passed to fast-glob. */
     cwd?: string,
-    /** (default: `false`) If true, tsToEsm won't remove sourcemaps. */
+    /** (default: `false`) If true, esmify won't remove sourcemaps. */
     keepSourceMap?: boolean,
 }
 
-export const tsToEsm = async (
+export const esmify = async (
     patterns: Array<string>,
     {cwd = process.cwd(), keepSourceMap = false}: Options = {},
 ) => {
@@ -20,7 +20,7 @@ export const tsToEsm = async (
     const sourceMapFiles = new Set<string>();
     for (const [absoluteFilePath, renamed] of renames) {
         const baseDir = path.dirname(absoluteFilePath);
-        console.info(`tsToEsm:parsing:${absoluteFilePath}`);
+        console.info(`esmify:parsing:${absoluteFilePath}`);
         for (const node of parseCode(renamed.code)) {
             if ('comment' in node) {
                 if (!keepSourceMap) {

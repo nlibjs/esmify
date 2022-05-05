@@ -1,17 +1,21 @@
-# @nlib/ts-to-esm
+# @nlib/esmify
 
-[![Test](https://github.com/nlibjs/ts-to-esm/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/ts-to-esm/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/nlibjs/ts-to-esm/branch/master/graph/badge.svg)](https://codecov.io/gh/nlibjs/ts-to-esm)
+[![Test](https://github.com/nlibjs/esmify/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/esmify/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/nlibjs/esmify/branch/master/graph/badge.svg)](https://codecov.io/gh/nlibjs/esmify)
 
-A command line tool to change file extensions.
+A command line tool converts tsc output to ESM modules.
 
 ## Usage
 
 ```
-npx @nlib/ts-to-esm --directory path/to/dir --mapping js/cjs [--mapping mjs/js]
+Usage: @nlib/esmify [options] <patterns...>
 
-  --directory, -d [string]       A directory replaceExt processes
-  --mapping, -m [string]         Specify a mapping in the format from/to (e.g. js/mjs).
-  --help, -h                     Show help
-  --version, -v                  Output the version number
+Arguments:
+  patterns         File patterns passed to fast-glob
+
+Options:
+  --cwd <cwd>      A path to the directory passed to fast-glob.
+  --keepSourceMap  If it exists, esmify won't remove sourcemaps.
+  -V, --version    output the version number
+  -h, --help       display help for command
 ```

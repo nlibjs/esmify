@@ -7,11 +7,11 @@ import * as os from 'os';
 import * as path from 'path';
 
 const require = createRequire(import.meta.url);
-const cliFilePath = require.resolve('../bin/tsToEsm.mjs');
+const cliFilePath = require.resolve('../bin/esmify.mjs');
 
 type Files = Record<string, string>;
 
-const createTestDirectory = async () => await fs.mkdtemp(path.join(os.tmpdir(), 'tsToEsm-'));
+const createTestDirectory = async () => await fs.mkdtemp(path.join(os.tmpdir(), 'esmify-'));
 const deployFiles = async (directory: string, files: Files) => {
     for (const [relativePath, body] of Object.entries(files)) {
         const dest = path.join(directory, relativePath);
