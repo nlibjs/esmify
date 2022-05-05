@@ -1,9 +1,9 @@
 import * as acorn from 'acorn';
 import * as walk from 'acorn-walk';
 import * as console from 'console';
-import fg from 'fast-glob';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import {glob} from './glob';
 
 interface Options {
     /** (default: `process.cwd()`) A path to the directory passed to fast-glob. */
@@ -55,7 +55,7 @@ export const esmify = async (
 const getRenameMapping = async (patterns: Array<string>, cwd: string) => {
     const renames = new Map<string, {path: string, code: string}>();
     const targetExtensions = ['.js', '.mjs', '.cjs'];
-    for (const absoluteFilePath of await fg(patterns, {cwd, absolute: true})) {
+    for (const absoluteFilePath of await glob(patterns, {cwd, absolute: true})) {
         if (targetExtensions.includes(path.extname(absoluteFilePath))) {
             let renamedPath = absoluteFilePath;
             if (absoluteFilePath.endsWith('.js')) {
@@ -131,7 +131,7 @@ const isInteger = (input: unknown): input is number => Number.isInteger(input);
 
 const resolveLocalSource = async (source: string, importer: string) => {
     const cwd = path.dirname(importer);
-    const found = await fg(getRequirePatterns(source), {cwd, absolute: true});
+    const found = await glob(getRequirePatterns(source), {cwd});
     if (found.length === 0) {
         throw new Error(`Can't Resolve ${source} from ${importer}`);
     }
