@@ -1,9 +1,9 @@
 import * as acorn from 'acorn';
 import * as walk from 'acorn-walk';
 import * as console from 'console';
+import fg from 'fast-glob';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import {glob} from './glob';
 
 interface Options {
     /** (default: `process.cwd()`) A path to the directory passed to fast-glob. */
@@ -72,6 +72,13 @@ const getRenameMapping = async (patterns: Array<string>, cwd: string) => {
         }
     }
     return renames;
+};
+
+const glob = async (patterns: Array<string>, options: fg.Options) => {
+    return await fg(
+        patterns.map((pattern) => pattern.split(path.sep).join('/')),
+        {absolute: true, ...options},
+    );
 };
 
 interface Comment {

@@ -1,10 +1,10 @@
 import test from 'ava';
 import * as childProcess from 'child_process';
+import fg from 'fast-glob';
 import * as fs from 'fs/promises';
 import {createRequire} from 'module';
 import * as os from 'os';
 import * as path from 'path';
-import {glob} from './glob';
 
 const require = createRequire(import.meta.url);
 const cliFilePath = require.resolve('../bin/esmify.mjs');
@@ -21,7 +21,7 @@ const deployFiles = async (directory: string, files: Files) => {
 };
 const readFiles = async (directory: string) => {
     const files: Files = {};
-    for (const file of await glob(['**'], {cwd: directory})) {
+    for (const file of await fg(['**'], {cwd: directory, absolute: true})) {
         const key = path.relative(directory, file).split(path.sep).join('/');
         files[key] = await fs.readFile(file, 'utf-8');
     }
