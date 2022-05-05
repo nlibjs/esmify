@@ -22,7 +22,8 @@ const deployFiles = async (directory: string, files: Files) => {
 const readFiles = async (directory: string) => {
     const files: Files = {};
     for (const file of await fg('**', {cwd: directory, absolute: true})) {
-        files[path.relative(directory, file)] = await fs.readFile(file, 'utf-8');
+        const key = path.relative(directory, file).split(path.sep).join('/');
+        files[key] = await fs.readFile(file, 'utf-8');
     }
     return files;
 };
