@@ -168,7 +168,7 @@ const getRelativeImportSourceValue = (
     if (!relativePath.startsWith('.')) {
         relativePath = `./${relativePath}`;
     }
-    return relativePath;
+    return relativePath.split(path.sep).join('/');
 };
 
 const replaceCode = (
