@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.2 (2022-05-06)
+
+### Features
+
+- console output ([767bbb9](https://github.com/nlibjs/esmify/commit/767bbb97ac6ab1c4cbe0b7c706ced3afce79a332))
+
+
 ## v0.1.1 (2022-05-06)
 
 ### Bug Fixes
