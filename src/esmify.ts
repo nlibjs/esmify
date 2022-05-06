@@ -16,6 +16,7 @@ export const esmify = async (
     patterns: Array<string>,
     {cwd = process.cwd(), keepSourceMap = false}: Options = {},
 ) => {
+    console.info('esmify:start', {patterns, cwd, keepSourceMap});
     const renames = await getRenameMapping(patterns, cwd);
     const sourceMapFiles = new Set<string>();
     for (const [absoluteFilePath, renamed] of renames) {
@@ -39,6 +40,7 @@ export const esmify = async (
             }
         }
     }
+    console.info(`esmify:writing ${renames.size} files`);
     for (const [absoluteFilePath, renamed] of renames) {
         await fs.writeFile(renamed.path, renamed.code);
         if (absoluteFilePath !== renamed.path) {
@@ -46,6 +48,7 @@ export const esmify = async (
         }
     }
     if (!keepSourceMap) {
+        console.info(`esmify:deleting ${sourceMapFiles.size} sourcemaps`);
         for (const sourceMapFile of sourceMapFiles) {
             await fs.unlink(sourceMapFile);
         }
