@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.1 (2022-05-06)
+
+### Bug Fixes
+
+- allow some syntaxes ([0d415bf](https://github.com/nlibjs/esmify/commit/0d415bf5593363b435fcac15b9ab95108b019d41))
+
+
 ## v0.1.0 (2022-05-05)
 
 ### Features
