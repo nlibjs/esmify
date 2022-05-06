@@ -21,7 +21,7 @@ export const esmify = async (
     for (const [absoluteFilePath, renamed] of renames) {
         const baseDir = path.dirname(absoluteFilePath);
         console.info(`esmify:parsing:${absoluteFilePath}`);
-        for (const node of parseCode(renamed.code)) {
+        for (const node of parseCode(renamed.code, absoluteFilePath)) {
             if ('comment' in node) {
                 if (!keepSourceMap) {
                     /** Remove sourcemap comments */
@@ -87,12 +87,23 @@ interface Comment {
     block: boolean,
     comment: string,
 }
-const parseCode = (code: string) => {
+const parseCode = (code: string, sourceFile: string) => {
     const nodes: Array<Comment | StringLiteral> = [];
     const onComment = (block: boolean, comment: string, start: number, end: number) => {
         nodes.push({block, comment: comment.trim(), start, end});
     };
-    const tree = acorn.parse(code, {sourceType: 'module', ecmaVersion: 'latest', onComment});
+    const tree = acorn.parse(code, {
+        sourceFile,
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+        allowAwaitOutsideFunction: true,
+        allowHashBang: true,
+        allowImportExportEverywhere: true,
+        allowReserved: true,
+        allowReturnOutsideFunction: true,
+        allowSuperOutsideMethod: true,
+        onComment,
+    });
     const checkSource = (node: acorn.Node) => {
         if (isNodeWithSource(node) && isStringLiteral(node.source)) {
             nodes.push(node.source);
