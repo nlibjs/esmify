@@ -62,6 +62,23 @@ test('rename .js files', async (t) => {
     });
 });
 
+test('rename .d.ts files', async (t) => {
+    const directory = await createTestDirectory();
+    await deployFiles(directory, {
+        'foo.js': 'console.info(123)',
+        'foo.d.ts': 'console.info(123)',
+        'bar.js': 'console.info(456)',
+        'bar.d.ts': 'console.info(456)',
+    });
+    await execute(directory, path.join(directory, '**'));
+    t.deepEqual(await readFiles(directory), {
+        'foo.mjs': 'console.info(123)',
+        'foo.d.mts': 'console.info(123)',
+        'bar.mjs': 'console.info(456)',
+        'bar.d.mts': 'console.info(456)',
+    });
+});
+
 test('sync import/export sources', async (t) => {
     const directory = await createTestDirectory();
     await deployFiles(directory, {
