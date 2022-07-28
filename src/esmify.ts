@@ -42,9 +42,6 @@ export const esmify = async (
     }
     console.info(`esmify:writing ${renames.size} files`);
     for (const [absoluteFilePath, renamed] of renames) {
-        if (absoluteFilePath.endsWith('.js')) {
-            await renameTypeFile(absoluteFilePath);
-        }
         await fs.writeFile(renamed.path, renamed.code);
         if (absoluteFilePath !== renamed.path) {
             await fs.unlink(absoluteFilePath);
@@ -58,27 +55,13 @@ export const esmify = async (
     }
 };
 
-const renameTypeFile = async (absoluteFilePath: string) => {
-    const typeFilePath = `${absoluteFilePath.slice(0, -3)}.d.ts`;
-    const renamedTypeFilePath = `${absoluteFilePath.slice(0, -3)}.d.mts`;
-    await fs.rename(typeFilePath, renamedTypeFilePath).catch((error) => {
-        if (!isRecord(error) || error.code !== 'ENOENT') {
-            throw error;
-        }
-    });
-};
-
 const getRenameMapping = async (patterns: Array<string>, cwd: string) => {
     const renames = new Map<string, {path: string, code: string}>();
     const targetExtensions = ['.js', '.mjs', '.cjs'];
     for (const absoluteFilePath of await glob(patterns, {cwd, absolute: true})) {
         if (targetExtensions.includes(path.extname(absoluteFilePath))) {
-            let renamedPath = absoluteFilePath;
-            if (absoluteFilePath.endsWith('.js')) {
-                renamedPath = `${absoluteFilePath.slice(0, -3)}.mjs`;
-            }
             const code = await fs.readFile(absoluteFilePath, 'utf-8');
-            renames.set(absoluteFilePath, {path: renamedPath, code});
+            renames.set(absoluteFilePath, {path: absoluteFilePath, code});
         }
     }
     for (const [absoluteFilePath, renamed] of renames) {
