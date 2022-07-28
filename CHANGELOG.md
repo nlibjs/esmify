@@ -1,9 +1,10 @@
 # Changelog
 
-## v0.1.5 (2022-07-28)
+## v0.2.0 (2022-07-28)
 
 ### Features
 
+- disable rename feature ([18f7d7e](https://github.com/nlibjs/esmify/commit/18f7d7e798789e0c30a9b605336d0c5c5b84884b))
 - rename .d.ts files ([e8b1d2f](https://github.com/nlibjs/esmify/commit/e8b1d2f72befa8cb881f35d58cc14b202c99b33f))
 
 
