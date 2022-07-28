@@ -20,17 +20,17 @@ import {v1} from './file1';
 const f1 = import('./file1');
 ```
 
-esmify renames `*.js` to `*.mjs` and disambiguates import sources in the code.
+esmify disambiguates import sources in the code.
 
 ```javascript
-// file1.mjs
-import {v2} from './file2.mjs';
-const f2 = import('./file2.mjs');
+// file1.js
+import {v2} from './file2.js';
+const f2 = import('./file2.js');
 
-// file2.mjs
+// file2.js
 import {external} from '../extenal/file.js';
-import {v1} from './file1.mjs';
-const f1 = import('./file1.mjs');
+import {v1} from './file1.js';
+const f1 = import('./file1.js');
 ```
 
 ## Usage
