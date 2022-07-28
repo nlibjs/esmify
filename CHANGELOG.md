@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.2.1 (2022-07-28)
+
+### Build System
+
+- change quotation ([bc6e739](https://github.com/nlibjs/esmify/commit/bc6e7392d7102e279b489970829fb1eb565219ab))
+
+### Dependency Upgrades
+
+- add @nlib/changelog ([dde72fd](https://github.com/nlibjs/esmify/commit/dde72fd8e678f77e5c6a629a552dabb8cae708cc))
+- ava:4.3.0→4.3.1 eslint:8.19.0→8.20.0 lint-staged:12.5.0→13.0.3 ([25fd35f](https://github.com/nlibjs/esmify/commit/25fd35fd875044d31887943637c1da2a96487593))
+- commander:9.3.0→9.4.0 ([002fc0d](https://github.com/nlibjs/esmify/commit/002fc0d555ab77b6411ac4fb4e76416cf41fe2e9))
+- acorn:8.7.1→8.8.0 ([34cb381](https://github.com/nlibjs/esmify/commit/34cb3815529372e94ee3a09141b6082d4a4668a7))
+- @typescript-eslint/eslint-plugin:5.30.5→5.31.0 @typescript-eslint/parser:5.30.5→5.31.0 ([23ec515](https://github.com/nlibjs/esmify/commit/23ec515356475916fbcaf8f648cdd9e9d99a9993))
+- @types/node:17.0.45→18.6.2 ([0150b31](https://github.com/nlibjs/esmify/commit/0150b317f33e85aeedd11d7fbb4a9c1ebc0387e5))
+
+
 ## v0.1.2 (2022-05-06)
 
 ### Features
