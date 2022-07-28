@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.5 (2022-07-28)
+
+### Features
+
+- rename .d.ts files ([e8b1d2f](https://github.com/nlibjs/esmify/commit/e8b1d2f72befa8cb881f35d58cc14b202c99b33f))
+
+
 ## v0.1.4 (2022-07-28)
 
 ### Build System
