@@ -44,6 +44,7 @@ Arguments:
 Options:
   --cwd <cwd>      A path to the directory passed to fast-glob.
   --keepSourceMap  If it exists, esmify won't remove sourcemaps.
+  --noMjs          If it exists, esmify won't change *.js to *.mjs.
   -V, --version    output the version number
   -h, --help       display help for command
 ```
