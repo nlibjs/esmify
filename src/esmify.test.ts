@@ -7,7 +7,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 const require = createRequire(import.meta.url);
-const cliFilePath = require.resolve('../bin/esmify.js');
+const cliFilePath = require.resolve('../bin/esmify.mjs');
 
 type Files = Record<string, string>;
 
@@ -57,8 +57,25 @@ test('rename .js files', async (t) => {
     });
     await execute(directory, path.join(directory, '**'));
     t.deepEqual(await readFiles(directory), {
+        'foo.mjs': 'console.info(123)',
+        'bar.mjs': 'console.info(456)',
+    });
+});
+
+test('rename .d.ts files', async (t) => {
+    const directory = await createTestDirectory();
+    await deployFiles(directory, {
         'foo.js': 'console.info(123)',
+        'foo.d.ts': 'console.info(123)',
         'bar.js': 'console.info(456)',
+        'bar.d.ts': 'console.info(456)',
+    });
+    await execute(directory, path.join(directory, '**'));
+    t.deepEqual(await readFiles(directory), {
+        'foo.mjs': 'console.info(123)',
+        'foo.d.mts': 'console.info(123)',
+        'bar.mjs': 'console.info(456)',
+        'bar.d.mts': 'console.info(456)',
     });
 });
 
@@ -88,23 +105,23 @@ test('sync import/export sources', async (t) => {
     await execute(directory, path.join(directory, '*'));
     t.deepEqual(await readFiles(directory), {
         'external/b.js': 'export const b = 1;',
-        'foo.js': [
+        'foo.mjs': [
             'import {b} from "./external/b.js";',
-            'import {x as y} from "./bar.js";',
-            'export * from "./bar.js";',
+            'import {x as y} from "./bar.mjs";',
+            'export * from "./bar.mjs";',
             'export {z} from "./baz.mjs";',
         ].join('\n'),
-        'bar.js': [
+        'bar.mjs': [
             'import {b} from "./external/b.js";',
-            'import {x as y} from "./foo.js";',
-            'export * from "./foo.js";',
+            'import {x as y} from "./foo.mjs";',
+            'export * from "./foo.mjs";',
             'export {z} from "./baz.mjs";',
         ].join('\n'),
         'baz.mjs': [
             'import {b} from "./external/b.js";',
-            'import {x as y} from "./foo.js";',
-            'export * from "./foo.js";',
-            'export {z} from "./bar.js";',
+            'import {x as y} from "./foo.mjs";',
+            'export * from "./foo.mjs";',
+            'export {z} from "./bar.mjs";',
         ].join('\n'),
     });
 });
@@ -122,11 +139,11 @@ test('support dynamic imports', async (t) => {
     await execute(directory, path.join(directory, '*'));
     t.deepEqual(await readFiles(directory), {
         'external/b.js': 'export const b = 1;',
-        'foo.js': [
+        'foo.mjs': [
             'const {b} = await import("./external/b.js");',
-            'const barPromise = import("./bar.js");',
+            'const barPromise = import("./bar.mjs");',
         ].join('\n'),
-        'bar.js': 'export const bar = 123;',
+        'bar.mjs': 'export const bar = 123;',
     });
 });
 
@@ -153,12 +170,12 @@ test('delete sourcemaps', async (t) => {
             '//# sourceMappingURL=b.js.map',
         ].join('\n'),
         'external/b.js.map': 'b.js.map',
-        'foo.js': [
+        'foo.mjs': [
             'const {b} = await import("./external/b.js");',
-            'const barPromise = import("./bar.js");',
+            'const barPromise = import("./bar.mjs");',
             '',
         ].join('\n'),
-        'bar.js': 'export const bar = 123;',
+        'bar.mjs': 'export const bar = 123;',
     });
 });
 
@@ -185,12 +202,12 @@ test('keep sourcemaps', async (t) => {
             '//# sourceMappingURL=b.js.map',
         ].join('\n'),
         'external/b.js.map': 'b.js.map',
-        'foo.js': [
+        'foo.mjs': [
             'const {b} = await import("./external/b.js");',
-            'const barPromise = import("./bar.js");',
+            'const barPromise = import("./bar.mjs");',
             '//#sourceMappingURL = foo.js.map',
         ].join('\n'),
         'foo.js.map': 'foo.js.map',
-        'bar.js': 'export const bar = 123;',
+        'bar.mjs': 'export const bar = 123;',
     });
 });

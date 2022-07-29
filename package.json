@@ -22,17 +22,17 @@
         "lib"
     ],
     "bin": {
-        "esmify": "./bin/esmify.js",
-        "nlib-esmify": "./bin/esmify.js"
+        "esmify": "./bin/esmify.mjs",
+        "nlib-esmify": "./bin/esmify.mjs"
     },
     "scripts": {
         "build": "run-s build:*",
         "build:tsc": "tsc",
-        "build:esmify": "node bin/esmify.js \"lib/**\"",
+        "build:esmify": "node bin/esmify.mjs \"lib/**\"",
         "test": "run-s test:*",
         "test:build": "run-s test:build:*",
         "test:build:tsc": "tsc",
-        "test:build:esmify": "node bin/esmify.js --keepSourceMap \"lib/**\"",
+        "test:build:esmify": "node bin/esmify.mjs --keepSourceMap \"lib/**\"",
         "test:unit": "ava",
         "lint": "eslint --ext .ts src",
         "postversion": "run-s postversion:*",
