@@ -10,6 +10,7 @@ program.name(packageJson.name);
 program.description(packageJson.description);
 program.option('--cwd <cwd>', 'A path to the directory passed to fast-glob.');
 program.option('--keepSourceMap', 'If it exists, esmify won\'t remove sourcemaps.');
+program.option('--noMjs', 'If it exists, esmify won\'t change *.js to *.mjs.');
 program.argument('<patterns...>', 'File patterns passed to fast-glob');
 program.version(packageJson.version);
 program.action(
