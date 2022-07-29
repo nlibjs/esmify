@@ -4,6 +4,7 @@ import * as console from 'console';
 import fg from 'fast-glob';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import ts from 'typescript';
 
 interface Options {
     /** (default: `process.cwd()`) A path to the directory passed to fast-glob. */
@@ -19,12 +20,12 @@ export const esmify = async (
     {cwd = process.cwd(), keepSourceMap = false, noMjs = false}: Options = {},
 ) => {
     console.info('esmify:start', {patterns, cwd, keepSourceMap});
-    const renames = await getRenameMapping(patterns, cwd, noMjs);
+    const renames = await renameFiles(patterns, cwd, noMjs);
     const sourceMapFiles = new Set<string>();
-    for (const [absoluteFilePath, renamed] of renames) {
-        const baseDir = path.dirname(absoluteFilePath);
-        console.info(`esmify:parsing:${absoluteFilePath}`);
-        for (const node of parseCode(renamed.code, absoluteFilePath)) {
+    for (const [, renamed] of renames) {
+        const baseDir = path.dirname(renamed.dest);
+        console.info(`esmify:parsing:${renamed.dest}`);
+        for (const node of parseCode(renamed.code, renamed.dest)) {
             if ('comment' in node) {
                 if (!keepSourceMap) {
                     /** Remove sourcemap comments */
@@ -35,19 +36,16 @@ export const esmify = async (
                     }
                 }
             } else if (node.value.startsWith('.')) {
-                const resolvedAbsoluteFilePath = await resolveLocalSource(node.value, absoluteFilePath);
+                const resolvedAbsoluteFilePath = await resolveLocalSource(node.value, renamed.dest);
                 const localDependency = renames.get(resolvedAbsoluteFilePath) || {dest: resolvedAbsoluteFilePath};
-                const relativePath = getRelativeImportSourceValue(localDependency.dest, absoluteFilePath);
+                const relativePath = getRelativeImportSourceValue(localDependency.dest, renamed.dest);
                 renamed.code = replaceCode(renamed.code, node, JSON.stringify(relativePath));
             }
         }
     }
-    console.info(`esmify:writing ${renames.size} files`);
-    for (const [absoluteFilePath, renamed] of renames) {
+    for (const [, renamed] of renames) {
+        console.info(`esmify:writing ${renamed.dest}`);
         await fs.writeFile(renamed.dest, renamed.code);
-        if (absoluteFilePath !== renamed.dest) {
-            await fs.unlink(absoluteFilePath);
-        }
     }
     if (!keepSourceMap) {
         console.info(`esmify:deleting ${sourceMapFiles.size} sourcemaps`);
@@ -57,7 +55,7 @@ export const esmify = async (
     }
 };
 
-const getRenameMapping = async (
+const renameFiles = async (
     patterns: Array<string>,
     cwd: string,
     noMjs: boolean,
@@ -65,8 +63,12 @@ const getRenameMapping = async (
     const renames = new Map<string, {dest: string, code: string}>();
     for await (const absoluteFilePath of listTargetFiles(patterns, {cwd})) {
         let renamedPath = absoluteFilePath;
-        if (!noMjs && absoluteFilePath.endsWith('.js')) {
-            renamedPath = `${absoluteFilePath.slice(0, -3)}.mjs`;
+        if (!noMjs) {
+            if (absoluteFilePath.endsWith('.ts')) {
+                renamedPath = `${absoluteFilePath.slice(0, -3)}.mts`;
+            } else if (absoluteFilePath.endsWith('.js')) {
+                renamedPath = `${absoluteFilePath.slice(0, -3)}.mjs`;
+            }
         }
         const code = await fs.readFile(absoluteFilePath, 'utf-8');
         renames.set(absoluteFilePath, {dest: renamedPath, code});
@@ -79,13 +81,16 @@ const getRenameMapping = async (
             renames.delete(renamed.dest);
         }
     }
+    for (const [absoluteFilePath, renamed] of renames) {
+        await fs.rename(absoluteFilePath, renamed.dest);
+    }
     return renames;
 };
 
 const listTargetFiles = async function* (
     patterns: Array<string>,
     options: fg.Options,
-    targetExtensions = ['.js', '.mjs', '.cjs'],
+    targetExtensions = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'],
 ) {
     for (const absoluteFilePath of await fg(
         patterns.map(forwardSlash),
@@ -104,6 +109,13 @@ interface Comment {
     comment: string,
 }
 const parseCode = (code: string, sourceFile: string) => {
+    if ((/\.[mc]?ts$/).test(sourceFile)) {
+        return parseTsCode(code, sourceFile);
+    }
+    return parseJsCode(code, sourceFile);
+};
+
+const parseJsCode = (code: string, sourceFile: string) => {
     const nodes: Array<Comment | StringLiteral> = [];
     const onComment = (block: boolean, comment: string, start: number, end: number) => {
         nodes.push({block, comment: comment.trim(), start, end});
@@ -133,6 +145,75 @@ const parseCode = (code: string, sourceFile: string) => {
     });
     return nodes.sort(byStartIndexDesc);
 };
+
+const parseTsCode = (code: string, sourceFile: string) => {
+    const nodes: Array<StringLiteral> = [];
+    const tsSource = ts.createSourceFile(sourceFile, code, ts.ScriptTarget.ESNext);
+    for (const tsLiteral of listTsSourceStringLiterals(tsSource)) {
+        nodes.push({
+            type: 'Literal',
+            start: tsLiteral.getStart(tsSource),
+            end: tsLiteral.getEnd(),
+            value: tsLiteral.text,
+            raw: tsLiteral.getText(tsSource),
+        });
+    }
+    return nodes.sort(byStartIndexDesc);
+};
+
+const listTsSourceStringLiterals = function* (tsSource: ts.SourceFile): Generator<ts.StringLiteral> {
+    for (const [node] of walkTsSource(tsSource, tsSource)) {
+        if (ts.isImportDeclaration(node)) {
+            let checking = false;
+            for (const [n] of walkTsSource(node, tsSource)) {
+                if (checking) {
+                    if (ts.isStringLiteral(n)) {
+                        yield n;
+                        break;
+                    }
+                } else if (n.kind === ts.SyntaxKind.FromKeyword) {
+                    checking = true;
+                }
+            }
+        } else if (ts.isImportTypeNode(node)) {
+            let checking = false;
+            for (const [n] of walkTsSource(node, tsSource)) {
+                if (checking) {
+                    if (ts.isStringLiteral(n)) {
+                        yield n;
+                        break;
+                    }
+                } else if (n.kind === ts.SyntaxKind.OpenParenToken) {
+                    checking = true;
+                }
+            }
+        }
+    }
+};
+
+const walkTsSource = function* (node: ts.Node, tsSource: ts.SourceFile, depth = 0): Generator<[ts.Node, number]> {
+    yield [node, depth];
+    for (const child of node.getChildren(tsSource)) {
+        yield* walkTsSource(child, tsSource, depth + 1);
+    }
+};
+
+// const kindMap = new Map(
+//     Object.keys(ts.SyntaxKind).map(
+//         (name) => [(ts.SyntaxKind as unknown as Record<string, number>)[name], name],
+//     ),
+// );
+// const kind = (k: ts.SyntaxKind) => kindMap.get(k) || 'Unknown';
+
+// const printTree = (node: ts.Node, tsSource: ts.SourceFile, startDepth = 0) => {
+//     for (const [n, depth] of walkTsSource(node, tsSource, startDepth)) {
+//         let suffix = '';
+//         if (ts.isStringLiteralLike(n)) {
+//             suffix += ` ${n.getFullText(tsSource)}`;
+//         }
+//         console.info(`${'|  '.repeat(depth)}${kind(n.kind)}${suffix}`);
+//     }
+// };
 
 const byStartIndexDesc = (a: {start: number}, b: {start: number}) => b.start - a.start;
 
