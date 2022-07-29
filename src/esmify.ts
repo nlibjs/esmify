@@ -163,7 +163,7 @@ const parseTsCode = (code: string, sourceFile: string) => {
 
 const listTsSourceStringLiterals = function* (tsSource: ts.SourceFile): Generator<ts.StringLiteral> {
     for (const [node] of walkTsSource(tsSource, tsSource)) {
-        if (ts.isImportDeclaration(node)) {
+        if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
             let checking = false;
             for (const [n] of walkTsSource(node, tsSource)) {
                 if (checking) {

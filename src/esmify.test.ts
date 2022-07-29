@@ -211,3 +211,36 @@ test('keep sourcemaps', async (t) => {
         'bar.mjs': 'export const bar = 123;',
     });
 });
+
+test('convert .d.ts files', async (t) => {
+    const directory = await createTestDirectory();
+    await deployFiles(directory, {
+        'external/b.js': 'export const b = 1;',
+        'foo.js': [
+            'const {b} = await import(\'./external/b\');',
+            'const barPromise = import(\'./bar\');',
+        ].join('\n'),
+        'bar.js': 'export const bar = 123;',
+        'baz.d.ts': [
+            'import * as baz1 from \'./foo\';',
+            'export * from \'./foo\';',
+            'export default baz1;',
+            'export const baz2 = Promise<typeof import(\'./bar\').bar>;',
+        ].join('\n'),
+    });
+    await execute(directory, path.join(directory, '*'));
+    t.deepEqual(await readFiles(directory), {
+        'external/b.js': 'export const b = 1;',
+        'foo.mjs': [
+            'const {b} = await import("./external/b.js");',
+            'const barPromise = import("./bar.mjs");',
+        ].join('\n'),
+        'bar.mjs': 'export const bar = 123;',
+        'baz.d.mts': [
+            'import * as baz1 from "./foo.mjs";',
+            'export * from "./foo.mjs";',
+            'export default baz1;',
+            'export const baz2 = Promise<typeof import("./bar.mjs").bar>;',
+        ].join('\n'),
+    });
+});
