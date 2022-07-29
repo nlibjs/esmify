@@ -10,14 +10,16 @@ interface Options {
     cwd?: string,
     /** (default: `false`) If true, esmify won't remove sourcemaps. */
     keepSourceMap?: boolean,
+    /** (defualt: `false`) If it exists, esmify won\'t change *.js to *.mjs. */
+    noMjs?: boolean,
 }
 
 export const esmify = async (
     patterns: Array<string>,
-    {cwd = process.cwd(), keepSourceMap = false}: Options = {},
+    {cwd = process.cwd(), keepSourceMap = false, noMjs = false}: Options = {},
 ) => {
     console.info('esmify:start', {patterns, cwd, keepSourceMap});
-    const renames = await getRenameMapping(patterns, cwd);
+    const renames = await getRenameMapping(patterns, cwd, noMjs);
     const sourceMapFiles = new Set<string>();
     for (const [absoluteFilePath, renamed] of renames) {
         const baseDir = path.dirname(absoluteFilePath);
@@ -34,16 +36,16 @@ export const esmify = async (
                 }
             } else if (node.value.startsWith('.')) {
                 const resolvedAbsoluteFilePath = await resolveLocalSource(node.value, absoluteFilePath);
-                const localDependency = renames.get(resolvedAbsoluteFilePath) || {path: resolvedAbsoluteFilePath};
-                const relativePath = getRelativeImportSourceValue(localDependency.path, absoluteFilePath);
+                const localDependency = renames.get(resolvedAbsoluteFilePath) || {dest: resolvedAbsoluteFilePath};
+                const relativePath = getRelativeImportSourceValue(localDependency.dest, absoluteFilePath);
                 renamed.code = replaceCode(renamed.code, node, JSON.stringify(relativePath));
             }
         }
     }
     console.info(`esmify:writing ${renames.size} files`);
     for (const [absoluteFilePath, renamed] of renames) {
-        await fs.writeFile(renamed.path, renamed.code);
-        if (absoluteFilePath !== renamed.path) {
+        await fs.writeFile(renamed.dest, renamed.code);
+        if (absoluteFilePath !== renamed.dest) {
             await fs.unlink(absoluteFilePath);
         }
     }
@@ -55,29 +57,44 @@ export const esmify = async (
     }
 };
 
-const getRenameMapping = async (patterns: Array<string>, cwd: string) => {
-    const renames = new Map<string, {path: string, code: string}>();
-    const targetExtensions = ['.js', '.mjs', '.cjs'];
-    for (const absoluteFilePath of await glob(patterns, {cwd, absolute: true})) {
-        if (targetExtensions.includes(path.extname(absoluteFilePath))) {
-            const code = await fs.readFile(absoluteFilePath, 'utf-8');
-            renames.set(absoluteFilePath, {path: absoluteFilePath, code});
+const getRenameMapping = async (
+    patterns: Array<string>,
+    cwd: string,
+    noMjs: boolean,
+) => {
+    const renames = new Map<string, {dest: string, code: string}>();
+    for await (const absoluteFilePath of listTargetFiles(patterns, {cwd})) {
+        let renamedPath = absoluteFilePath;
+        if (!noMjs && absoluteFilePath.endsWith('.js')) {
+            renamedPath = `${absoluteFilePath.slice(0, -3)}.mjs`;
         }
+        const code = await fs.readFile(absoluteFilePath, 'utf-8');
+        renames.set(absoluteFilePath, {dest: renamedPath, code});
     }
     for (const [absoluteFilePath, renamed] of renames) {
-        if (absoluteFilePath !== renamed.path && renames.has(renamed.path)) {
-            await fs.unlink(renamed.path);
-            renames.delete(renamed.path);
+        const renameIsRequired = absoluteFilePath !== renamed.dest;
+        const thereIsSomething = renames.has(renamed.dest);
+        if (renameIsRequired && thereIsSomething) {
+            await fs.unlink(renamed.dest);
+            renames.delete(renamed.dest);
         }
     }
     return renames;
 };
 
-const glob = async (patterns: Array<string>, options: fg.Options) => {
-    return await fg(
-        patterns.map((pattern) => pattern.split(path.sep).join('/')),
+const listTargetFiles = async function* (
+    patterns: Array<string>,
+    options: fg.Options,
+    targetExtensions = ['.js', '.mjs', '.cjs'],
+) {
+    for (const absoluteFilePath of await fg(
+        patterns.map(forwardSlash),
         {absolute: true, ...options},
-    );
+    )) {
+        if (targetExtensions.includes(path.extname(absoluteFilePath))) {
+            yield absoluteFilePath;
+        }
+    }
 };
 
 interface Comment {
@@ -146,9 +163,11 @@ const isString = (input: unknown): input is string => typeof input === 'string';
 
 const isInteger = (input: unknown): input is number => Number.isInteger(input);
 
+const forwardSlash = (input: string) => input.split(path.sep).join('/');
+
 const resolveLocalSource = async (source: string, importer: string) => {
     const cwd = path.dirname(importer);
-    const found = await glob(getRequirePatterns(source), {cwd});
+    const found = await fg(getRequirePatterns(source).map(forwardSlash), {cwd, absolute: true});
     if (found.length === 0) {
         throw new Error(`Can't Resolve ${source} from ${importer}`);
     }
