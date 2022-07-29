@@ -1,11 +1,25 @@
 # Changelog
 
-## v0.2.0 (2022-07-28)
+## v0.3.0 (2022-07-29)
 
 ### Features
 
+- transform .d.ts files ([32b5dbb](https://github.com/nlibjs/esmify/commit/32b5dbbf6392750918617b55b79505a2402c5e3b))
+- add --noMjs option ([e8fb181](https://github.com/nlibjs/esmify/commit/e8fb1815d51d19eece0993df77e4aeaee48c56d1))
 - disable rename feature ([18f7d7e](https://github.com/nlibjs/esmify/commit/18f7d7e798789e0c30a9b605336d0c5c5b84884b))
 - rename .d.ts files ([e8b1d2f](https://github.com/nlibjs/esmify/commit/e8b1d2f72befa8cb881f35d58cc14b202c99b33f))
+
+### Bug Fixes
+
+- support export declarations ([7420e11](https://github.com/nlibjs/esmify/commit/7420e118fb316c33382b65166796e3772cc2039d))
+
+### Tests
+
+- revert tests ([4d0df70](https://github.com/nlibjs/esmify/commit/4d0df7072bdff7cf4e21ed89fb15a350105e6e15))
+
+### Documentation
+
+- update readme ([c00ad7d](https://github.com/nlibjs/esmify/commit/c00ad7dcbc12497897f556ed95c5d8b6da10d9dc))
 
 
 ## v0.1.4 (2022-07-28)
