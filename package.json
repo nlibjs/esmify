@@ -47,7 +47,7 @@
         "fast-glob": "3.2.11"
     },
     "devDependencies": {
-        "@nlib/changelog": "0.2.1",
+        "@nlib/changelog": "0.2.3",
         "@nlib/eslint-config": "3.18.0",
         "@nlib/githooks": "0.1.0",
         "@types/node": "18.6.4",
