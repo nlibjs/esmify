@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.2 (2022-08-27)
+
+### Code Refactoring
+
+- use native methods to resolve imports ([66a0dc6](https://github.com/nlibjs/esmify/commit/66a0dc6fbd2d35fa25485698155ea70c82b0cde6))
+
+
 ## v0.3.1 (2022-08-27)
 
 ### Features
