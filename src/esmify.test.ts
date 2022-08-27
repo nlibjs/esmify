@@ -1,10 +1,10 @@
-import test from 'ava';
 import * as childProcess from 'child_process';
-import fg from 'fast-glob';
 import * as fs from 'fs/promises';
 import {createRequire} from 'module';
 import * as os from 'os';
 import * as path from 'path';
+import fg from 'fast-glob';
+import test from 'ava';
 
 const require = createRequire(import.meta.url);
 const cliFilePath = require.resolve('../bin/esmify.mjs');

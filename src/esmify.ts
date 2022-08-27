@@ -1,9 +1,11 @@
-import * as acorn from 'acorn';
-import * as walk from 'acorn-walk';
+/* eslint-disable import/default */
+/* eslint-disable import/no-named-as-default-member */
 import * as console from 'console';
-import fg from 'fast-glob';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as acorn from 'acorn';
+import * as walk from 'acorn-walk';
+import fg from 'fast-glob';
 import ts from 'typescript';
 
 interface Options {

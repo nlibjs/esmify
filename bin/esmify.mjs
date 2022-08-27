@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-import {Command} from 'commander';
+/* eslint-disable import/dynamic-import-chunkname */
 import * as console from 'console';
 import * as fs from 'fs';
+import {Command} from 'commander';
 
 /** @type {{name: string, version: string, description: string}} */
 const packageJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf-8'));
