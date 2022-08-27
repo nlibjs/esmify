@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.0 (2022-07-29)
+## v0.3.1 (2022-08-27)
 
 ### Features
 
@@ -11,6 +11,8 @@
 
 ### Bug Fixes
 
+- add typescript to dependencies ([01f13da](https://github.com/nlibjs/esmify/commit/01f13dad5816e88d36205f59018f78f6853a3afe))
+- FUNDING.yml ([b8f89c8](https://github.com/nlibjs/esmify/commit/b8f89c808c593cd0bd320eb941cfec9c4713485c))
 - support export declarations ([7420e11](https://github.com/nlibjs/esmify/commit/7420e118fb316c33382b65166796e3772cc2039d))
 
 ### Tests
@@ -20,6 +22,17 @@
 ### Documentation
 
 - update readme ([c00ad7d](https://github.com/nlibjs/esmify/commit/c00ad7dcbc12497897f556ed95c5d8b6da10d9dc))
+
+### Continuous Integration
+
+- use v3 actions ([093e9b3](https://github.com/nlibjs/esmify/commit/093e9b3f656cb8cce090e4be4aa6c2201e0a82a9))
+
+### Dependency Upgrades
+
+- @nlib/eslint-config:3.18.0→3.19.4 @typescript-eslint/eslint-plugin:5.33.1→5.35.1 @typescript-eslint/parser:5.33.0→5.35.1 eslint:8.22.0→8.23.0 ([547e462](https://github.com/nlibjs/esmify/commit/547e46281d29293b807f3d9f30246780b2222f91))
+- typescript:4.7.4→4.8.2 ([75bf8de](https://github.com/nlibjs/esmify/commit/75bf8de221da1c4cb85aceab1f32a47161924352))
+- ava:4.3.1→4.3.3 ([1b01f6f](https://github.com/nlibjs/esmify/commit/1b01f6fbf9328f7a220423d2b9f1ee80dade0625))
+- @types/node:18.6.4→18.7.13 ([36b8a2a](https://github.com/nlibjs/esmify/commit/36b8a2a0d261b9b429055d6aacec7e4d3faca69e))
 
 
 ## v0.1.4 (2022-07-28)
