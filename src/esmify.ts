@@ -249,28 +249,27 @@ const isInteger = (input: unknown): input is number => Number.isInteger(input);
 const forwardSlash = (input: string) => input.split(path.sep).join('/');
 
 const resolveLocalSource = async (source: string, importer: string) => {
-    const cwd = path.dirname(importer);
-    const found = await fg(getRequirePatterns(source).map(forwardSlash), {cwd, absolute: true});
-    if (found.length === 0) {
-        throw new Error(`Can't Resolve ${source} from ${importer}`);
+    for (const candidate of listRequirePatterns(source, importer)) {
+        const stat = await fs.stat(candidate).catch(() => null);
+        if (stat && stat.isFile()) {
+            return candidate;
+        }
     }
-    if (1 < found.length) {
-        throw new Error(`There's multiple choices for ${source} from ${importer}\n${found.map((x) => `  - ${x}`).join('\n')}`);
-    }
-    return found[0];
+    throw new Error(`Can't Resolve ${source} from ${importer}`);
 };
 
-const getRequirePatterns = (source: string) => [
-    source,
-    `${source}.js`,
-    `${source}.json`,
-    `${source}.mjs`,
-    `${source}.cjs`,
-    `${source}/index.js`,
-    `${source}/index.json`,
-    `${source}/index.mjs`,
-    `${source}/index.cjs`,
-];
+const listRequirePatterns = function* (source: string, importer: string) {
+    const absoluteSource = path.resolve(path.dirname(importer), source);
+    yield absoluteSource;
+    yield `${absoluteSource}.js`;
+    yield `${absoluteSource}.json`;
+    yield `${absoluteSource}.mjs`;
+    yield `${absoluteSource}.cjs`;
+    yield `${absoluteSource}/index.js`;
+    yield `${absoluteSource}/index.json`;
+    yield `${absoluteSource}/index.mjs`;
+    yield `${absoluteSource}/index.cjs`;
+};
 
 const getRelativeImportSourceValue = (
     absoluteImporteePath: string,
