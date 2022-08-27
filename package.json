@@ -48,7 +48,7 @@
     },
     "devDependencies": {
         "@nlib/changelog": "0.2.3",
-        "@nlib/eslint-config": "3.18.0",
+        "@nlib/eslint-config": "3.19.4",
         "@nlib/githooks": "0.1.0",
         "@types/node": "18.6.4",
         "@typescript-eslint/eslint-plugin": "5.33.1",
