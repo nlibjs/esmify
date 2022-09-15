@@ -51,7 +51,7 @@
         "@nlib/eslint-config": "3.19.5",
         "@nlib/githooks": "0.1.0",
         "@types/node": "18.7.16",
-        "@typescript-eslint/eslint-plugin": "5.36.2",
+        "@typescript-eslint/eslint-plugin": "5.37.0",
         "@typescript-eslint/parser": "5.36.2",
         "ava": "4.3.3",
         "eslint": "8.23.1",
