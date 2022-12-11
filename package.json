@@ -50,7 +50,7 @@
         "@nlib/changelog": "0.2.3",
         "@nlib/eslint-config": "3.19.5",
         "@nlib/githooks": "0.1.0",
-        "@types/node": "18.11.11",
+        "@types/node": "18.11.12",
         "@typescript-eslint/eslint-plugin": "5.46.0",
         "@typescript-eslint/parser": "5.46.0",
         "ava": "4.3.3",
