@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.3.3 (2023-01-09)
+
+### Dependency Upgrades
+
+- upgrade dependencies ([7663083](https://github.com/nlibjs/esmify/commit/766308311a11aaa8ed6a295fda424b8d30f4e0fa))
+- commander:9.4.0→9.5.0 ([5b5a723](https://github.com/nlibjs/esmify/commit/5b5a723fe6631bd5f13afa99f582024deea301b4))
+- @nlib/changelog:0.2.3→0.2.4 ([409ef5a](https://github.com/nlibjs/esmify/commit/409ef5a464f2931879c854e5d99316a079114dff))
+
+
 ## v0.3.2 (2022-08-27)
 
 ### Code Refactoring
