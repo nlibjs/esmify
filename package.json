@@ -47,7 +47,7 @@
         "typescript": "4.9.5"
     },
     "devDependencies": {
-        "@nlib/changelog": "0.2.4",
+        "@nlib/changelog": "0.3.0",
         "@nlib/eslint-config": "3.19.6",
         "@nlib/githooks": "0.1.0",
         "@types/node": "18.17.5",
