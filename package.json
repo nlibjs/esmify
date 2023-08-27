@@ -40,7 +40,7 @@
     "acorn-walk": "8.2.0",
     "commander": "11.0.0",
     "fast-glob": "3.3.1",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "devDependencies": {
     "@nlib/changelog": "0.3.0",
