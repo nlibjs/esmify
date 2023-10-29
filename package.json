@@ -33,7 +33,7 @@
     "version": "npx @nlib/changelog --output CHANGELOG.md && git add CHANGELOG.md"
   },
   "dependencies": {
-    "acorn": "8.10.0",
+    "acorn": "8.11.1",
     "acorn-walk": "8.2.0",
     "commander": "11.1.0",
     "fast-glob": "3.3.1",
