@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "acorn": "8.11.1",
-    "acorn-walk": "8.2.0",
+    "acorn-walk": "8.3.0",
     "commander": "11.1.0",
     "fast-glob": "3.3.1",
     "typescript": "5.2.2"
