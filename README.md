@@ -48,3 +48,8 @@ Options:
   -V, --version    output the version number
   -h, --help       display help for command
 ```
+
+## Development: Git hooks
+
+Git hooks are configured explicitly by each developer. Refer to the
+[official Git hook documentation](https://git-scm.com/docs/githooks).
